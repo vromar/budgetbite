@@ -1,0 +1,3398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BudgetBite – Smart Grocery Planning for Belgium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --peach-50: #FFF7F0;
+            --peach-100: #FFE8D6;
+            --peach-200: #FFD4B8;
+            --peach-300: #FFB088;
+            --peach-400: #FF8C5A;
+            --peach-500: #FF6B35;
+            --peach-600: #E85A2A;
+            --cream: #FFFBF7;
+            --charcoal: #1A1A1A;
+            --charcoal-light: #2D2D2D;
+            --gray-100: #F5F5F5;
+            --gray-200: #E8E8E8;
+            --gray-300: #D1D1D1;
+            --gray-400: #9E9E9E;
+            --gray-500: #6B6B6B;
+            --success: #34C759;
+            --success-light: #E8F9ED;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+            --shadow-glow: 0 4px 20px rgba(255,107,53,0.25);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* App Shell */
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--cream);
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                background: linear-gradient(135deg, var(--peach-100) 0%, var(--cream) 50%, var(--peach-50) 100%);
+                padding: 20px;
+            }
+            .app-container {
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-lg);
+                min-height: calc(100vh - 40px);
+                overflow: hidden;
+            }
+        }
+
+        /* Header */
+        .header {
+            padding: 16px 20px;
+            background: var(--cream);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--peach-400), var(--peach-500));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--charcoal);
+        }
+
+        .logo-text span {
+            color: var(--peach-500);
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--gray-100);
+            border-radius: var(--radius-lg);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .nav-tab:hover {
+            color: var(--charcoal);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: var(--peach-500);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-tab svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Phase indicator */
+        .phase-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--peach-50);
+        }
+
+        .phase-step {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .phase-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .phase-step.active .phase-number,
+        .phase-step.completed .phase-number {
+            background: var(--peach-500);
+        }
+
+        .phase-step.completed .phase-number {
+            background: var(--success);
+        }
+
+        .phase-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--gray-400);
+            transition: color 0.3s ease;
+        }
+
+        .phase-step.active .phase-label {
+            color: var(--peach-600);
+        }
+
+        .phase-connector {
+            width: 30px;
+            height: 2px;
+            background: var(--gray-300);
+            transition: background 0.3s ease;
+        }
+
+        .phase-connector.completed {
+            background: var(--success);
+        }
+
+        /* Screen containers */
+        .screen {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Analyze Screen */
+        .input-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--peach-500);
+        }
+
+        .recipe-textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        .recipe-textarea:focus {
+            outline: none;
+            border-color: var(--peach-400);
+        }
+
+        .recipe-textarea::placeholder {
+            color: var(--gray-400);
+        }
+
+        /* Context inputs */
+        .context-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .context-input {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .context-input:focus-within {
+            border-color: var(--peach-400);
+        }
+
+        .context-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .context-input input,
+        .context-input select {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--charcoal);
+            outline: none;
+        }
+
+        .context-input select {
+            cursor: pointer;
+        }
+
+        /* Location input with geolocation */
+        .location-input-wrapper {
+            position: relative;
+        }
+
+        .location-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .location-field input {
+            flex: 1;
+        }
+
+        .geolocate-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--peach-100);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .geolocate-btn:hover {
+            background: var(--peach-200);
+        }
+
+        .geolocate-btn.loading {
+            animation: pulse 1s infinite;
+        }
+
+        .geolocate-btn svg {
+            width: 18px;
+            height: 18px;
+            color: var(--peach-600);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--peach-400);
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .autocomplete-dropdown.active {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.highlighted {
+            background: var(--peach-50);
+        }
+
+        .autocomplete-item-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--gray-400);
+            flex-shrink: 0;
+        }
+
+        .autocomplete-item-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .autocomplete-item-main {
+            font-weight: 600;
+            color: var(--charcoal);
+            font-size: 0.95rem;
+        }
+
+        .autocomplete-item-sub {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+
+        .autocomplete-item-postcode {
+            font-size: 0.85rem;
+            color: var(--peach-600);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .location-status {
+            font-size: 0.75rem;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .location-status.success {
+            color: var(--success);
+        }
+
+        .location-status.error {
+            color: #E53935;
+        }
+
+        .location-status.loading {
+            color: var(--gray-500);
+        }
+
+        .location-status svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Analysis error */
+        .analysis-error {
+            background: #FEF2F2;
+            border: 2px solid #FECACA;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .analysis-error svg {
+            width: 40px;
+            height: 40px;
+            color: #EF4444;
+            margin-bottom: 12px;
+        }
+
+        .analysis-error p {
+            color: #991B1B;
+            font-weight: 500;
+        }
+
+        /* Analysis progress steps */
+        .analysis-progress {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            color: var(--gray-400);
+            transition: color 0.3s ease;
+        }
+
+        .progress-step.active {
+            color: var(--peach-600);
+        }
+
+        .progress-step.completed {
+            color: var(--success);
+        }
+
+        .progress-step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .progress-step-icon {
+            background: var(--peach-100);
+        }
+
+        .progress-step.completed .progress-step-icon {
+            background: var(--success-light);
+        }
+
+        .progress-step-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .progress-step.active .progress-step-icon svg {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Store selector */
+        .store-selector {
+            margin-bottom: 20px;
+        }
+
+        .store-options {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 4px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .store-option {
+            flex-shrink: 0;
+            padding: 12px 20px;
+            border: 2px solid var(--gray-200);
+            background: white;
+            border-radius: var(--radius-lg);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .store-option:hover {
+            border-color: var(--peach-300);
+        }
+
+        .store-option.selected {
+            border-color: var(--peach-500);
+            background: var(--peach-50);
+            color: var(--peach-600);
+        }
+
+        .store-logo {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+
+        /* Primary button */
+        .btn-primary {
+            width: 100%;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, var(--peach-500), var(--peach-600));
+            border: none;
+            border-radius: var(--radius-lg);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255,107,53,0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn-primary.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Analysis Results */
+        .analysis-result {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .recipe-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--charcoal);
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+        .meta-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--peach-400);
+        }
+
+        .price-badge {
+            background: linear-gradient(135deg, var(--peach-500), var(--peach-600));
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-size: 1.2rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Tags */
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tag {
+            padding: 6px 14px;
+            background: var(--peach-100);
+            color: var(--peach-600);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .tag.green {
+            background: var(--success-light);
+            color: #1B8A3E;
+        }
+
+        /* Nutrition grid */
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+        }
+
+        .nutrition-item {
+            text-align: center;
+        }
+
+        .nutrition-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--charcoal);
+        }
+
+        .nutrition-label {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Utensils */
+        .utensils-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .utensil {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+        .utensil svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Shopping List */
+        .list-section {
+            margin-bottom: 24px;
+        }
+
+        .list-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .list-section-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-count {
+            background: var(--gray-200);
+            color: var(--gray-500);
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+        }
+
+        /* Product cards */
+        .product-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .product-card.checked {
+            background: var(--success-light);
+            opacity: 0.7;
+        }
+
+        .product-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--gray-300);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .product-card.checked .product-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .product-checkbox svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .product-card.checked .product-checkbox svg {
+            opacity: 1;
+        }
+
+        .product-image {
+            width: 50px;
+            height: 50px;
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.5rem;
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--charcoal);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-brand {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+
+        .product-price {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--peach-600);
+            flex-shrink: 0;
+        }
+
+        /* Pantry items */
+        .pantry-card {
+            background: var(--gray-100);
+            border: 1px dashed var(--gray-300);
+        }
+
+        .pantry-card.checked {
+            background: var(--gray-100);
+            opacity: 0.5;
+        }
+
+        .pantry-card.checked .product-checkbox {
+            background: var(--gray-400);
+            border-color: var(--gray-400);
+        }
+
+        .pantry-card .product-price {
+            color: var(--gray-400);
+            font-size: 0.85rem;
+        }
+
+        /* My Lists Screen */
+        .lists-header {
+            margin-bottom: 20px;
+        }
+
+        .lists-title {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        .lists-subtitle {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        /* Filter tags */
+        .filter-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-tag {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 50px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tag:hover {
+            border-color: var(--peach-300);
+        }
+
+        .filter-tag.active {
+            background: var(--peach-500);
+            border-color: var(--peach-500);
+            color: white;
+        }
+
+        /* Hero card */
+        .hero-card {
+            background: linear-gradient(135deg, var(--peach-400), var(--peach-500));
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .hero-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .hero-title {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .hero-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .hero-price {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .hero-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hero-btn.primary {
+            background: white;
+            color: var(--peach-600);
+        }
+
+        .hero-btn.secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* List cards */
+        .list-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .list-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .list-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .list-card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--charcoal);
+        }
+
+        .list-card-price {
+            font-weight: 700;
+            color: var(--peach-600);
+        }
+
+        .list-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-bottom: 10px;
+        }
+
+        .list-card-tags {
+            display: flex;
+            gap: 6px;
+        }
+
+        .list-card-tag {
+            padding: 4px 10px;
+            background: var(--peach-100);
+            color: var(--peach-600);
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Shop Mode */
+        .shop-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .shop-title {
+            font-size: 1.2rem;
+        }
+
+        .shop-store {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-500);
+        }
+
+        .shop-store svg {
+            width: 16px;
+            height: 16px;
+            color: var(--peach-500);
+        }
+
+        .wake-lock-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--success-light);
+            color: #1B8A3E;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .wake-lock-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Cart footer */
+        .cart-footer {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            padding: 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            height: 6px;
+            background: var(--gray-200);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--peach-400), var(--peach-500));
+            transition: width 0.5s ease;
+        }
+
+        .cart-content {
+            padding: 16px 20px;
+        }
+
+        .cart-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .cart-stat {
+            text-align: center;
+        }
+
+        .cart-stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cart-stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--charcoal);
+        }
+
+        .cart-stat-value.in-cart {
+            color: var(--peach-500);
+        }
+
+        .cart-divider {
+            width: 1px;
+            background: var(--gray-200);
+        }
+
+        .btn-finish {
+            width: 100%;
+            padding: 16px;
+            background: var(--charcoal);
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-finish:hover {
+            background: var(--charcoal-light);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .modal-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--success);
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            color: var(--gray-500);
+            margin-bottom: 20px;
+        }
+
+        .modal-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+
+        .modal-stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .modal-stat-value.spent {
+            color: var(--peach-600);
+        }
+
+        .modal-stat-value.saved {
+            color: var(--success);
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--peach-500), var(--peach-600));
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Shop mode padding for footer */
+        .screen.shop-mode {
+            padding-bottom: 160px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            color: var(--gray-300);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        .input-section {
+            position: relative;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 380px) {
+            .nav-tab span {
+                display: none;
+            }
+            
+            .phase-label {
+                display: none;
+            }
+            
+            .nutrition-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Budget<span>Bite</span></span>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs" style="margin-top: 12px;">
+                <button class="nav-tab active" data-screen="analyze">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <span>Analyze</span>
+                </button>
+                <button class="nav-tab" data-screen="plan">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>My Lists</span>
+                </button>
+                <button class="nav-tab" data-screen="shop">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                    </svg>
+                    <span>Shop</span>
+                </button>
+            </nav>
+        </header>
+
+        <!-- Phase Indicator -->
+        <div class="phase-indicator" id="phaseIndicator">
+            <div class="phase-step active" data-phase="1">
+                <div class="phase-number">1</div>
+                <span class="phase-label">Analyze</span>
+            </div>
+            <div class="phase-connector"></div>
+            <div class="phase-step" data-phase="2">
+                <div class="phase-number">2</div>
+                <span class="phase-label">Plan</span>
+            </div>
+            <div class="phase-connector"></div>
+            <div class="phase-step" data-phase="3">
+                <div class="phase-number">3</div>
+                <span class="phase-label">Shop</span>
+            </div>
+        </div>
+
+        <!-- ANALYZE SCREEN -->
+        <section class="screen active" id="analyzeScreen">
+            <!-- Recipe Input Section -->
+            <div class="input-section">
+                <h3 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                    </svg>
+                    Paste Recipe URL or Ingredients
+                </h3>
+                
+                    <textarea class="recipe-textarea" placeholder="Paste a recipe URL or ingredients here...
+
+Example URL:
+https://www.bbcgoodfood.com/recipes/spaghetti-carbonara
+
+Or paste ingredients directly:
+500g beef chuck, cut into cubes
+250g mushrooms, sliced
+1 onion, diced
+2 cups beef broth
+1 cup sour cream"></textarea>
+            </div>
+
+            <!-- Context Section -->
+            <div class="input-section">
+                <h3 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    Serving & Location
+                </h3>
+                
+                <div class="context-row">
+                    <div class="context-input">
+                        <label class="context-label">Servings</label>
+                        <input type="number" id="servingsInput" value="4" min="1" max="20">
+                    </div>
+                    <div class="context-input location-input-wrapper">
+                        <label class="context-label">Location</label>
+                        <div class="location-field">
+                            <input type="text" id="locationInput" placeholder="Enter ZIP code" autocomplete="off">
+                            <button type="button" class="geolocate-btn" id="geolocateBtn" title="Use my location">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 2v4m0 12v4m10-10h-4M6 12H2"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+                        <div class="location-status" id="locationStatus"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Store Selection -->
+            <div class="input-section store-selector">
+                <h3 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    Choose Your Store
+                </h3>
+                
+                <div class="store-options">
+                    <button class="store-option selected" data-store="kroger">
+                        🛒 Kroger
+                    </button>
+                    <button class="store-option" data-store="ralphs">
+                        🔴 Ralphs
+                    </button>
+                    <button class="store-option" data-store="fredmeyer">
+                        🟢 Fred Meyer
+                    </button>
+                    <button class="store-option" data-store="smiths">
+                        🔵 Smith's
+                    </button>
+                </div>
+                
+                <p style="font-size: 0.75rem; color: var(--gray-400); margin-top: 8px; text-align: center;">
+                    Powered by Kroger API • Real-time prices
+                </p>
+            </div>
+
+            <!-- Analyze Button -->
+            <button class="btn-primary" id="analyzeBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                Analyze & Get Prices
+            </button>
+
+            <!-- Analysis Results (Initially Hidden) -->
+            <div id="analysisResults" style="display: none; margin-top: 24px;">
+                <!-- Error message -->
+                <div id="analysisError" class="analysis-error" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 40px; height: 40px; color: #E85A2A; margin-bottom: 12px;">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <p id="errorMessage">Could not parse recipe. Please try pasting ingredients directly.</p>
+                </div>
+
+                <div id="analysisContent">
+                    <div class="analysis-result">
+                        <div class="result-header">
+                            <div>
+                                <h2 class="recipe-name" id="resultRecipeName">Recipe Name</h2>
+                                <div class="recipe-meta">
+                                    <span class="meta-item" id="resultCookTime">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <polyline points="12 6 12 12 16 14"/>
+                                        </svg>
+                                        <span id="cookTimeValue">-- min</span>
+                                    </span>
+                                    <span class="meta-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                            <circle cx="9" cy="7" r="4"/>
+                                        </svg>
+                                        <span id="servingsValue">4 servings</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="price-badge" id="resultTotalPrice">€0.00</div>
+                        </div>
+
+                        <div class="tags-row" id="resultTags">
+                            <!-- Tags will be inserted here -->
+                        </div>
+
+                        <div class="nutrition-grid" id="resultNutrition">
+                            <div class="nutrition-item">
+                                <div class="nutrition-value" id="nutritionCalories">--</div>
+                                <div class="nutrition-label">Calories</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value" id="nutritionCarbs">--</div>
+                                <div class="nutrition-label">Carbs</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value" id="nutritionProtein">--</div>
+                                <div class="nutrition-label">Protein</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value" id="nutritionFat">--</div>
+                                <div class="nutrition-label">Fat</div>
+                            </div>
+                        </div>
+
+                        <div class="utensils-row" id="resultUtensils">
+                            <!-- Utensils will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Shopping List Preview -->
+                    <div class="list-section">
+                        <div class="list-section-header">
+                            <span class="list-section-title">
+                                🛒 Fresh & Main Items
+                                <span class="item-count" id="mainItemsCount">0</span>
+                            </span>
+                        </div>
+                        <div id="mainItemsList">
+                            <!-- Products will be inserted here -->
+                        </div>
+                    </div>
+
+                    <div class="list-section">
+                        <div class="list-section-header">
+                            <span class="list-section-title">
+                                🏠 Check Your Cupboard
+                                <span class="item-count" id="pantryItemsCount">0</span>
+                            </span>
+                        </div>
+                        <div id="pantryItemsList">
+                            <!-- Pantry items will be inserted here -->
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" id="saveListBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg>
+                        Save to My Lists
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PLAN (MY LISTS) SCREEN -->
+        <section class="screen" id="planScreen">
+            <div class="lists-header">
+                <h1 class="lists-title">My Shopping Lists</h1>
+                <p class="lists-subtitle">Your saved recipes ready to shop</p>
+            </div>
+
+            <!-- Filter Tags -->
+            <div class="filter-scroll">
+                <button class="filter-tag active">All</button>
+                <button class="filter-tag">🍳 Breakfast</button>
+                <button class="filter-tag">🥗 Lunch</button>
+                <button class="filter-tag">🍽️ Dinner</button>
+                <button class="filter-tag">🌱 Vegan</button>
+                <button class="filter-tag">🇮🇹 Italian</button>
+                <button class="filter-tag">🇮🇳 Indian</button>
+            </div>
+
+            <!-- Hero Card (Latest) -->
+            <div class="hero-card" id="heroCard">
+                <div class="hero-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    Latest • 10 min ago
+                </div>
+                <h3 class="hero-title">Spaghetti Carbonara</h3>
+                <div class="hero-meta">
+                    <span class="hero-price">€15.60</span>
+                    <span>• Colruyt Ghent</span>
+                </div>
+                <div class="hero-actions">
+                    <button class="hero-btn primary" id="startShoppingBtn">Start Shopping</button>
+                    <button class="hero-btn secondary">Edit</button>
+                </div>
+            </div>
+
+            <!-- Saved Lists -->
+            <h3 class="section-title" style="margin-bottom: 12px;">Previous Lists</h3>
+            
+            <!-- Empty state for no saved lists -->
+            <div id="noListsState" class="empty-state" style="display: none; padding: 40px 20px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 60px; height: 60px; color: var(--gray-300); margin-bottom: 16px;">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="18" x2="12" y2="12"/>
+                    <line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+                <h3>No Saved Lists Yet</h3>
+                <p>Analyze a recipe and save it to start building your lists.</p>
+            </div>
+
+            <!-- Container for dynamically added lists -->
+            <div id="savedListsContainer"></div>
+        </section>
+
+        <!-- SHOP SCREEN -->
+        <section class="screen shop-mode" id="shopScreen">
+            <div class="shop-header">
+                <h2 class="shop-title">Shopping Mode</h2>
+                <div class="shop-store" id="shopStoreDisplay">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span id="shopStoreName">Select a store</span>
+                </div>
+            </div>
+
+            <!-- Empty state when no list is selected -->
+            <div id="shopEmptyState" class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 80px; height: 80px; color: var(--gray-300); margin-bottom: 20px;">
+                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                </svg>
+                <h3>No Shopping List</h3>
+                <p>Analyze a recipe first, then start shopping from My Lists.</p>
+            </div>
+
+            <!-- Shopping Items (dynamically populated) -->
+            <div class="list-section" id="shopListSection" style="display: none;">
+                <div class="list-section-header">
+                    <span class="list-section-title">
+                        <span id="shopRecipeName">Recipe</span>
+                        <span class="item-count" id="shopItemsCount">0 items</span>
+                    </span>
+                </div>
+                <div id="shopItemsList">
+                    <!-- Items will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Cart Footer -->
+            <div class="cart-footer" id="cartFooter" style="display: none;">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                </div>
+                <div class="cart-content">
+                    <div class="cart-stats">
+                        <div class="cart-stat">
+                            <div class="cart-stat-label">In Cart</div>
+                            <div class="cart-stat-value in-cart" id="inCartValue">€0.00</div>
+                        </div>
+                        <div class="cart-divider"></div>
+                        <div class="cart-stat">
+                            <div class="cart-stat-label">Target Budget</div>
+                            <div class="cart-stat-value" id="targetValue">€15.60</div>
+                        </div>
+                    </div>
+                    <button class="btn-finish" id="finishBtn">Finish Shopping</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trip Complete Modal -->
+        <div class="modal-overlay" id="completeModal">
+            <div class="modal">
+                <div class="modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h3 class="modal-title">Trip Complete! 🎉</h3>
+                <p class="modal-subtitle">Great job staying on budget!</p>
+                <div class="modal-stats">
+                    <div>
+                        <div class="modal-stat-label">You Spent</div>
+                        <div class="modal-stat-value spent" id="modalSpent">€7.10</div>
+                    </div>
+                    <div>
+                        <div class="modal-stat-label">You Saved</div>
+                        <div class="modal-stat-value saved" id="modalSaved">€8.50</div>
+                    </div>
+                </div>
+                <button class="modal-btn" id="closeModal">Back to My Lists</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        const state = {
+            currentScreen: 'analyze',
+            currentPhase: 1,
+            inCart: 0,
+            targetBudget: 15.60,
+            checkedItems: new Set(),
+            currentRecipe: null,
+            shopItems: [],
+            selectedStore: 'Colruyt',
+            selectedLocation: '',
+            savedLists: [] // Array to store saved shopping lists
+        };
+
+        // Store emoji mapping
+        const storeEmojis = {
+            'Kroger': '🛒',
+            'Ralphs': '🔴',
+            'Fred Meyer': '🟢',
+            "Smith's": '🔵',
+            'kroger': '🛒',
+            'ralphs': '🔴',
+            'fredmeyer': '🟢',
+            'smiths': '🔵'
+        };
+
+        // DOM Elements
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const screens = document.querySelectorAll('.screen');
+        const phaseSteps = document.querySelectorAll('.phase-step');
+        const phaseConnectors = document.querySelectorAll('.phase-connector');
+        const storeOptions = document.querySelectorAll('.store-option');
+        const filterTags = document.querySelectorAll('.filter-tag');
+        const productCards = document.querySelectorAll('.product-card:not(.pantry-card)');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const saveListBtn = document.getElementById('saveListBtn');
+        const startShoppingBtn = document.getElementById('startShoppingBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const closeModal = document.getElementById('closeModal');
+        const analysisResults = document.getElementById('analysisResults');
+        const cartFooter = document.getElementById('cartFooter');
+        const progressBar = document.getElementById('progressBar');
+        const inCartValue = document.getElementById('inCartValue');
+        const completeModal = document.getElementById('completeModal');
+        const locationInput = document.getElementById('locationInput');
+        const geolocateBtn = document.getElementById('geolocateBtn');
+        const autocompleteDropdown = document.getElementById('autocompleteDropdown');
+        const locationStatus = document.getElementById('locationStatus');
+
+        // Belgian cities and postcodes database
+        const belgianLocations = [
+            { city: 'Brussels', postcode: '1000', region: 'Brussels' },
+            { city: 'Antwerp', postcode: '2000', region: 'Antwerp' },
+            { city: 'Ghent', postcode: '9000', region: 'East Flanders' },
+            { city: 'Charleroi', postcode: '6000', region: 'Hainaut' },
+            { city: 'Liège', postcode: '4000', region: 'Liège' },
+            { city: 'Bruges', postcode: '8000', region: 'West Flanders' },
+            { city: 'Namur', postcode: '5000', region: 'Namur' },
+            { city: 'Leuven', postcode: '3000', region: 'Flemish Brabant' },
+            { city: 'Mons', postcode: '7000', region: 'Hainaut' },
+            { city: 'Aalst', postcode: '9300', region: 'East Flanders' },
+            { city: 'Mechelen', postcode: '2800', region: 'Antwerp' },
+            { city: 'La Louvière', postcode: '7100', region: 'Hainaut' },
+            { city: 'Kortrijk', postcode: '8500', region: 'West Flanders' },
+            { city: 'Hasselt', postcode: '3500', region: 'Limburg' },
+            { city: 'Ostend', postcode: '8400', region: 'West Flanders' },
+            { city: 'Sint-Niklaas', postcode: '9100', region: 'East Flanders' },
+            { city: 'Tournai', postcode: '7500', region: 'Hainaut' },
+            { city: 'Genk', postcode: '3600', region: 'Limburg' },
+            { city: 'Seraing', postcode: '4100', region: 'Liège' },
+            { city: 'Roeselare', postcode: '8800', region: 'West Flanders' },
+            { city: 'Verviers', postcode: '4800', region: 'Liège' },
+            { city: 'Mouscron', postcode: '7700', region: 'Hainaut' },
+            { city: 'Beveren', postcode: '9120', region: 'East Flanders' },
+            { city: 'Dendermonde', postcode: '9200', region: 'East Flanders' },
+            { city: 'Beringen', postcode: '3580', region: 'Limburg' },
+            { city: 'Turnhout', postcode: '2300', region: 'Antwerp' },
+            { city: 'Dilbeek', postcode: '1700', region: 'Flemish Brabant' },
+            { city: 'Heist-op-den-Berg', postcode: '2220', region: 'Antwerp' },
+            { city: 'Sint-Truiden', postcode: '3800', region: 'Limburg' },
+            { city: 'Lokeren', postcode: '9160', region: 'East Flanders' },
+            { city: 'Brasschaat', postcode: '2930', region: 'Antwerp' },
+            { city: 'Vilvoorde', postcode: '1800', region: 'Flemish Brabant' },
+            { city: 'Waregem', postcode: '8790', region: 'West Flanders' },
+            { city: 'Châtelet', postcode: '6200', region: 'Hainaut' },
+            { city: 'Ath', postcode: '7800', region: 'Hainaut' },
+            { city: 'Binche', postcode: '7130', region: 'Hainaut' },
+            { city: 'Knokke-Heist', postcode: '8300', region: 'West Flanders' },
+            { city: 'Lier', postcode: '2500', region: 'Antwerp' },
+            { city: 'Wavre', postcode: '1300', region: 'Walloon Brabant' },
+            { city: 'Halle', postcode: '1500', region: 'Flemish Brabant' },
+            { city: 'Arlon', postcode: '6700', region: 'Luxembourg' },
+            { city: 'Tienen', postcode: '3300', region: 'Flemish Brabant' },
+            { city: 'Diest', postcode: '3290', region: 'Flemish Brabant' },
+            { city: 'Braine-l\'Alleud', postcode: '1420', region: 'Walloon Brabant' },
+            { city: 'Herentals', postcode: '2200', region: 'Antwerp' },
+            { city: 'Menen', postcode: '8930', region: 'West Flanders' },
+            { city: 'Ninove', postcode: '9400', region: 'East Flanders' },
+            { city: 'Geraardsbergen', postcode: '9500', region: 'East Flanders' },
+            { city: 'Geel', postcode: '2440', region: 'Antwerp' },
+            { city: 'Mol', postcode: '2400', region: 'Antwerp' },
+            { city: 'Ieper', postcode: '8900', region: 'West Flanders' },
+            { city: 'Eupen', postcode: '4700', region: 'Liège' },
+            { city: 'Spa', postcode: '4900', region: 'Liège' },
+            { city: 'Dinant', postcode: '5500', region: 'Namur' },
+            { city: 'Waterloo', postcode: '1410', region: 'Walloon Brabant' },
+            { city: 'Zaventem', postcode: '1930', region: 'Flemish Brabant' },
+            { city: 'Overijse', postcode: '3090', region: 'Flemish Brabant' },
+            { city: 'Zottegem', postcode: '9620', region: 'East Flanders' },
+            { city: 'Wetteren', postcode: '9230', region: 'East Flanders' }
+        ];
+
+        let highlightedIndex = -1;
+
+        // Autocomplete functionality
+        function filterLocations(query) {
+            if (!query || query.length < 1) return [];
+            const lowerQuery = query.toLowerCase();
+            return belgianLocations.filter(loc => 
+                loc.city.toLowerCase().includes(lowerQuery) || 
+                loc.postcode.startsWith(query)
+            ).slice(0, 8);
+        }
+
+        function renderAutocomplete(results) {
+            if (results.length === 0) {
+                autocompleteDropdown.classList.remove('active');
+                return;
+            }
+
+            autocompleteDropdown.innerHTML = results.map((loc, index) => `
+                <div class="autocomplete-item" data-index="${index}" data-city="${loc.city}" data-postcode="${loc.postcode}">
+                    <svg class="autocomplete-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <div class="autocomplete-item-text">
+                        <div class="autocomplete-item-main">${loc.city}</div>
+                        <div class="autocomplete-item-sub">${loc.region}</div>
+                    </div>
+                    <span class="autocomplete-item-postcode">${loc.postcode}</span>
+                </div>
+            `).join('');
+
+            autocompleteDropdown.classList.add('active');
+            highlightedIndex = -1;
+        }
+
+        function selectLocation(city, postcode) {
+            locationInput.value = `${city}, ${postcode}`;
+            autocompleteDropdown.classList.remove('active');
+            setLocationStatus('success', `📍 ${city} selected`);
+        }
+
+        function setLocationStatus(type, message) {
+            locationStatus.className = `location-status ${type}`;
+            const icons = {
+                success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+                error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+                loading: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+            };
+            locationStatus.innerHTML = (icons[type] || '') + ' ' + message;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    locationStatus.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        // Event listeners for autocomplete
+        locationInput.addEventListener('input', (e) => {
+            const results = filterLocations(e.target.value);
+            renderAutocomplete(results);
+        });
+
+        locationInput.addEventListener('focus', () => {
+            if (locationInput.value.length >= 1) {
+                const results = filterLocations(locationInput.value);
+                renderAutocomplete(results);
+            }
+        });
+
+        locationInput.addEventListener('keydown', (e) => {
+            const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
+            if (!autocompleteDropdown.classList.contains('active') || items.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                highlightedIndex = Math.min(highlightedIndex + 1, items.length - 1);
+                items.forEach((item, i) => item.classList.toggle('highlighted', i === highlightedIndex));
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                highlightedIndex = Math.max(highlightedIndex - 1, 0);
+                items.forEach((item, i) => item.classList.toggle('highlighted', i === highlightedIndex));
+            } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+                e.preventDefault();
+                const selected = items[highlightedIndex];
+                selectLocation(selected.dataset.city, selected.dataset.postcode);
+            } else if (e.key === 'Escape') {
+                autocompleteDropdown.classList.remove('active');
+            }
+        });
+
+        autocompleteDropdown.addEventListener('click', (e) => {
+            const item = e.target.closest('.autocomplete-item');
+            if (item) {
+                selectLocation(item.dataset.city, item.dataset.postcode);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.location-input-wrapper')) {
+                autocompleteDropdown.classList.remove('active');
+            }
+        });
+
+        // Geolocation functionality
+        geolocateBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                setLocationStatus('error', 'Geolocation not supported');
+                return;
+            }
+
+            geolocateBtn.classList.add('loading');
+            setLocationStatus('loading', 'Finding your location...');
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    
+                    // Find nearest Belgian city (simplified - using distance calculation)
+                    // In production, you'd use a reverse geocoding API
+                    const nearestCity = findNearestCity(latitude, longitude);
+                    
+                    if (nearestCity) {
+                        locationInput.value = `${nearestCity.city}, ${nearestCity.postcode}`;
+                        setLocationStatus('success', `📍 Located in ${nearestCity.city}`);
+                    } else {
+                        setLocationStatus('error', 'Could not determine city');
+                    }
+                    
+                    geolocateBtn.classList.remove('loading');
+                },
+                (error) => {
+                    geolocateBtn.classList.remove('loading');
+                    let message = 'Could not get location';
+                    if (error.code === 1) message = 'Location access denied';
+                    if (error.code === 2) message = 'Location unavailable';
+                    if (error.code === 3) message = 'Location request timed out';
+                    setLocationStatus('error', message);
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        });
+
+        // Simplified nearest city finder (approximate coordinates for Belgian cities)
+        const cityCoordinates = {
+            'Brussels': { lat: 50.8503, lng: 4.3517 },
+            'Antwerp': { lat: 51.2194, lng: 4.4025 },
+            'Ghent': { lat: 51.0543, lng: 3.7174 },
+            'Charleroi': { lat: 50.4108, lng: 4.4446 },
+            'Liège': { lat: 50.6326, lng: 5.5797 },
+            'Bruges': { lat: 51.2093, lng: 3.2247 },
+            'Namur': { lat: 50.4674, lng: 4.8720 },
+            'Leuven': { lat: 50.8798, lng: 4.7005 },
+            'Mons': { lat: 50.4542, lng: 3.9523 },
+            'Mechelen': { lat: 51.0259, lng: 4.4776 },
+            'Hasselt': { lat: 50.9307, lng: 5.3378 },
+            'Ostend': { lat: 51.2154, lng: 2.9286 },
+            'Kortrijk': { lat: 50.8279, lng: 3.2649 },
+            'Genk': { lat: 50.9654, lng: 5.5022 },
+            'Turnhout': { lat: 51.3227, lng: 4.9444 },
+            'Wavre': { lat: 50.7167, lng: 4.6000 },
+            'Arlon': { lat: 49.6833, lng: 5.8167 }
+        };
+
+        function findNearestCity(lat, lng) {
+            let nearest = null;
+            let minDistance = Infinity;
+
+            for (const [cityName, coords] of Object.entries(cityCoordinates)) {
+                const distance = Math.sqrt(
+                    Math.pow(lat - coords.lat, 2) + Math.pow(lng - coords.lng, 2)
+                );
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = belgianLocations.find(loc => loc.city === cityName);
+                }
+            }
+            return nearest;
+        }
+
+        // Auto-detect location on page load
+        setTimeout(() => {
+            if (navigator.geolocation && !locationInput.value) {
+                geolocateBtn.click();
+            }
+        }, 500);
+
+        // Navigation
+        function switchScreen(screenId) {
+            screens.forEach(s => s.classList.remove('active'));
+            navTabs.forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(`${screenId}Screen`).classList.add('active');
+            document.querySelector(`[data-screen="${screenId}"]`).classList.add('active');
+            
+            state.currentScreen = screenId;
+            
+            // Update phase
+            if (screenId === 'analyze') updatePhase(1);
+            else if (screenId === 'plan') updatePhase(2);
+            else if (screenId === 'shop') {
+                updatePhase(3);
+                cartFooter.style.display = 'block';
+            } else {
+                cartFooter.style.display = 'none';
+            }
+        }
+
+        function updatePhase(phase) {
+            state.currentPhase = phase;
+            phaseSteps.forEach((step, i) => {
+                step.classList.remove('active', 'completed');
+                if (i + 1 < phase) step.classList.add('completed');
+                if (i + 1 === phase) step.classList.add('active');
+            });
+            phaseConnectors.forEach((conn, i) => {
+                conn.classList.toggle('completed', i + 1 < phase);
+            });
+        }
+
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', () => switchScreen(tab.dataset.screen));
+        });
+
+        // Store selection
+        storeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                storeOptions.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+        });
+
+        // Filter tags
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                filterTags.forEach(t => t.classList.remove('active'));
+                tag.classList.add('active');
+            });
+        });
+
+        // Recipe parsing and analysis
+        const recipeTextarea = document.querySelector('.recipe-textarea');
+        
+        // Ingredient emoji mapping - comprehensive list
+        const ingredientEmojis = {
+            // Pasta & Grains
+            'pasta': '🍝', 'spaghetti': '🍝', 'penne': '🍝', 'noodle': '🍝', 'macaroni': '🍝', 'linguine': '🍝', 'fettuccine': '🍝', 'lasagna': '🍝', 'ravioli': '🍝', 'tortellini': '🍝',
+            'rice': '🍚', 'risotto': '🍚', 'basmati': '🍚', 'jasmine rice': '🍚',
+            'flour': '🌾', 'wheat': '🌾', 'oat': '🌾', 'oats': '🌾', 'cereal': '🌾', 'grain': '🌾',
+            'bread': '🍞', 'toast': '🍞', 'baguette': '🥖', 'croissant': '🥐', 'pretzel': '🥨', 'flatbread': '🫓', 'pita': '🫓', 'naan': '🫓', 'tortilla': '🫓',
+            'pancake': '🥞', 'waffle': '🧇',
+            
+            // Proteins - Meat
+            'beef': '🥩', 'steak': '🥩', 'chuck': '🥩', 'sirloin': '🥩', 'ribeye': '🥩', 'brisket': '🥩', 'roast': '🥩',
+            'mince': '🥩', 'ground beef': '🥩', 'ground meat': '🥩',
+            'chicken': '🍗', 'poultry': '🍗', 'turkey': '🦃', 'duck': '🦆',
+            'pork': '🥓', 'bacon': '🥓', 'pancetta': '🥓', 'ham': '🍖', 'prosciutto': '🍖',
+            'sausage': '🌭', 'hot dog': '🌭', 'bratwurst': '🌭', 'chorizo': '🌭',
+            'lamb': '🍖', 'mutton': '🍖', 'veal': '🍖',
+            'meat': '🍖', 'ribs': '🍖',
+            
+            // Proteins - Seafood
+            'fish': '🐟', 'salmon': '🐟', 'tuna': '🐟', 'cod': '🐟', 'tilapia': '🐟', 'trout': '🐟', 'mackerel': '🐟', 'sardine': '🐟', 'anchovy': '🐟', 'bass': '🐟', 'halibut': '🐟',
+            'shrimp': '🦐', 'prawn': '🦐', 'scampi': '🦐',
+            'crab': '🦀', 'lobster': '🦞',
+            'oyster': '🦪', 'mussel': '🦪', 'clam': '🦪', 'scallop': '🦪',
+            'squid': '🦑', 'calamari': '🦑', 'octopus': '🐙',
+            
+            // Proteins - Other
+            'egg': '🥚', 'eggs': '🥚', 'yolk': '🥚', 'egg white': '🥚',
+            'tofu': '🧈', 'tempeh': '🧈', 'seitan': '🧈',
+            
+            // Dairy
+            'cheese': '🧀', 'parmesan': '🧀', 'cheddar': '🧀', 'mozzarella': '🧀', 'feta': '🧀', 'gouda': '🧀', 'brie': '🧀', 'camembert': '🧀', 'gruyere': '🧀', 'ricotta': '🧀', 'cream cheese': '🧀', 'mascarpone': '🧀', 'gorgonzola': '🧀',
+            'milk': '🥛', 'cream': '🥛', 'sour cream': '🥛', 'half and half': '🥛', 'buttermilk': '🥛', 'condensed milk': '🥛', 'evaporated milk': '🥛',
+            'yogurt': '🥛', 'yoghurt': '🥛', 'kefir': '🥛',
+            'butter': '🧈', 'margarine': '🧈', 'ghee': '🧈',
+            'ice cream': '🍨', 'gelato': '🍨',
+            
+            // Vegetables - Alliums
+            'onion': '🧅', 'shallot': '🧅', 'scallion': '🧅', 'green onion': '🧅', 'spring onion': '🧅', 'leek': '🧅',
+            'garlic': '🧄',
+            'chive': '🌿', 'chives': '🌿',
+            
+            // Vegetables - Nightshades
+            'tomato': '🍅', 'cherry tomato': '🍅', 'sun-dried tomato': '🍅',
+            'pepper': '🌶️', 'chili': '🌶️', 'jalapeño': '🌶️', 'habanero': '🌶️', 'cayenne': '🌶️', 'serrano': '🌶️',
+            'bell pepper': '🫑', 'capsicum': '🫑', 'paprika': '🫑',
+            'eggplant': '🍆', 'aubergine': '🍆',
+            'potato': '🥔', 'potatoes': '🥔', 'sweet potato': '🍠', 'yam': '🍠',
+            
+            // Vegetables - Leafy Greens
+            'lettuce': '🥬', 'salad': '🥬', 'spinach': '🥬', 'kale': '🥬', 'arugula': '🥬', 'rocket': '🥬', 'chard': '🥬', 'collard': '🥬', 'cabbage': '🥬', 'bok choy': '🥬', 'watercress': '🥬', 'endive': '🥬', 'radicchio': '🥬',
+            
+            // Vegetables - Root
+            'carrot': '🥕', 'carrots': '🥕',
+            'beet': '🥕', 'beetroot': '🥕', 'turnip': '🥕', 'parsnip': '🥕', 'radish': '🥕', 'rutabaga': '🥕', 'celeriac': '🥕',
+            'ginger': '🫚', 'turmeric': '🫚', 'galangal': '🫚',
+            
+            // Vegetables - Other
+            'broccoli': '🥦', 'broccolini': '🥦',
+            'cauliflower': '🥦',
+            'corn': '🌽', 'sweetcorn': '🌽', 'maize': '🌽',
+            'cucumber': '🥒', 'pickle': '🥒', 'gherkin': '🥒', 'zucchini': '🥒', 'courgette': '🥒',
+            'mushroom': '🍄', 'shiitake': '🍄', 'portobello': '🍄', 'cremini': '🍄', 'porcini': '🍄', 'chanterelle': '🍄', 'oyster mushroom': '🍄', 'enoki': '🍄',
+            'asparagus': '🥬', 'artichoke': '🥬', 'fennel': '🥬',
+            'celery': '🥬',
+            'pea': '🟢', 'peas': '🟢', 'green bean': '🟢', 'string bean': '🟢', 'snap pea': '🟢',
+            'bean': '🫘', 'beans': '🫘', 'kidney bean': '🫘', 'black bean': '🫘', 'pinto bean': '🫘', 'cannellini': '🫘', 'chickpea': '🫘', 'lentil': '🫘', 'legume': '🫘',
+            'edamame': '🫛',
+            'squash': '🎃', 'pumpkin': '🎃', 'butternut': '🎃', 'acorn squash': '🎃',
+            'olive': '🫒', 'olives': '🫒',
+            'avocado': '🥑', 'guacamole': '🥑',
+            
+            // Fruits
+            'apple': '🍎', 'green apple': '🍏',
+            'pear': '🍐',
+            'orange': '🍊', 'mandarin': '🍊', 'tangerine': '🍊', 'clementine': '🍊',
+            'lemon': '🍋', 'lime': '🍋‍🟩',
+            'banana': '🍌', 'plantain': '🍌',
+            'watermelon': '🍉',
+            'grape': '🍇', 'raisin': '🍇',
+            'strawberry': '🍓',
+            'blueberry': '🫐', 'berry': '🫐', 'berries': '🫐', 'raspberry': '🫐', 'blackberry': '🫐', 'cranberry': '🫐',
+            'melon': '🍈', 'cantaloupe': '🍈', 'honeydew': '🍈',
+            'peach': '🍑', 'nectarine': '🍑', 'apricot': '🍑',
+            'cherry': '🍒', 'cherries': '🍒',
+            'mango': '🥭',
+            'pineapple': '🍍',
+            'coconut': '🥥', 'coconut milk': '🥥', 'coconut cream': '🥥',
+            'kiwi': '🥝',
+            'fig': '🍇', 'date': '🍇', 'prune': '🍇',
+            'pomegranate': '🍎',
+            'papaya': '🥭', 'passion fruit': '🥭', 'guava': '🥭',
+            
+            // Nuts & Seeds
+            'nut': '🥜', 'nuts': '🥜', 'peanut': '🥜', 'almond': '🥜', 'walnut': '🥜', 'cashew': '🥜', 'pistachio': '🥜', 'hazelnut': '🥜', 'macadamia': '🥜', 'pecan': '🥜', 'chestnut': '🌰', 'pine nut': '🥜',
+            'seed': '🌻', 'seeds': '🌻', 'sunflower': '🌻', 'sesame': '🌻', 'pumpkin seed': '🌻', 'chia': '🌻', 'flax': '🌻', 'hemp': '🌻', 'poppy seed': '🌻',
+            
+            // Herbs (fresh)
+            'herb': '🌿', 'herbs': '🌿', 'basil': '🌿', 'parsley': '🌿', 'cilantro': '🌿', 'coriander': '🌿', 'mint': '🌿', 'dill': '🌿', 'thyme': '🌿', 'rosemary': '🌿', 'oregano': '🌿', 'sage': '🌿', 'tarragon': '🌿', 'marjoram': '🌿', 'bay leaf': '🌿', 'bay leaves': '🌿', 'lemongrass': '🌿', 'curry leaves': '🌿',
+            'garnish': '🌿', 'fresh': '🌿',
+            
+            // Spices
+            'spice': '🧂', 'salt': '🧂', 'sea salt': '🧂', 'kosher salt': '🧂',
+            'black pepper': '🫚', 'peppercorn': '🫚', 'white pepper': '🫚',
+            'cinnamon': '🫚', 'nutmeg': '🫚', 'clove': '🫚', 'cardamom': '🫚', 'star anise': '🫚', 'allspice': '🫚',
+            'cumin': '🫚', 'coriander seed': '🫚', 'fennel seed': '🫚', 'caraway': '🫚', 'mustard seed': '🫚',
+            'curry': '🫚', 'garam masala': '🫚', 'turmeric': '🫚', 'saffron': '🫚', 'sumac': '🫚', 'za\'atar': '🫚',
+            'vanilla': '🫚', 'vanilla extract': '🫚',
+            
+            // Liquids & Sauces
+            'oil': '🫒', 'olive oil': '🫒', 'vegetable oil': '🫒', 'canola oil': '🫒', 'sunflower oil': '🫒', 'coconut oil': '🫒', 'sesame oil': '🫒', 'avocado oil': '🫒',
+            'vinegar': '🍶', 'balsamic': '🍶', 'apple cider vinegar': '🍶', 'rice vinegar': '🍶', 'red wine vinegar': '🍶', 'white wine vinegar': '🍶',
+            'broth': '🥣', 'stock': '🥣', 'bouillon': '🥣',
+            'sauce': '🥫', 'tomato sauce': '🥫', 'marinara': '🥫', 'pasta sauce': '🥫',
+            'soy sauce': '🍶', 'tamari': '🍶', 'fish sauce': '🍶', 'oyster sauce': '🍶', 'hoisin': '🍶', 'teriyaki': '🍶',
+            'worcestershire': '🍶',
+            'hot sauce': '🌶️', 'sriracha': '🌶️', 'tabasco': '🌶️', 'salsa': '🌶️',
+            'ketchup': '🍅', 'tomato paste': '🍅', 'tomato puree': '🍅',
+            'mayonnaise': '🥫', 'mayo': '🥫', 'aioli': '🥫',
+            'mustard': '🟡', 'dijon': '🟡',
+            'honey': '🍯', 'maple syrup': '🍯', 'agave': '🍯', 'molasses': '🍯', 'syrup': '🍯',
+            'jam': '🍓', 'jelly': '🍓', 'marmalade': '🍊', 'preserve': '🍓',
+            
+            // Beverages
+            'water': '💧',
+            'wine': '🍷', 'red wine': '🍷', 'white wine': '🍾', 'cooking wine': '🍷', 'sherry': '🍷', 'marsala': '🍷', 'port': '🍷',
+            'beer': '🍺', 'ale': '🍺', 'lager': '🍺',
+            'coffee': '☕', 'espresso': '☕',
+            'tea': '🍵', 'green tea': '🍵', 'matcha': '🍵',
+            'juice': '🧃', 'orange juice': '🍊', 'lemon juice': '🍋', 'lime juice': '🍋',
+            'milk': '🥛',
+            
+            // Baking & Sweets
+            'sugar': '🍬', 'brown sugar': '🍬', 'powdered sugar': '🍬', 'icing sugar': '🍬', 'caster sugar': '🍬',
+            'chocolate': '🍫', 'cocoa': '🍫', 'cacao': '🍫', 'chocolate chip': '🍫',
+            'candy': '🍬', 'caramel': '🍬', 'toffee': '🍬',
+            'cookie': '🍪', 'biscuit': '🍪',
+            'cake': '🍰', 'cupcake': '🧁', 'muffin': '🧁',
+            'pie': '🥧', 'tart': '🥧',
+            'donut': '🍩', 'doughnut': '🍩',
+            'baking powder': '🧂', 'baking soda': '🧂', 'yeast': '🧂', 'cornstarch': '🧂',
+            
+            // Prepared Foods
+            'pizza': '🍕',
+            'burger': '🍔', 'hamburger': '🍔',
+            'sandwich': '🥪', 'sub': '🥪', 'wrap': '🌯', 'burrito': '🌯', 'taco': '🌮',
+            'fries': '🍟', 'french fries': '🍟', 'chips': '🍟',
+            'soup': '🍲', 'stew': '🍲', 'chili': '🍲',
+            'salad': '🥗',
+            'sushi': '🍣', 'sashimi': '🍣',
+            'ramen': '🍜', 'pho': '🍜', 'noodle soup': '🍜',
+            'dumpling': '🥟', 'gyoza': '🥟', 'wonton': '🥟', 'pierogi': '🥟',
+            'curry': '🍛',
+            'fried rice': '🍛', 'biryani': '🍛',
+            'kebab': '🍢', 'skewer': '🍢', 'satay': '🍢',
+            
+            'default': '🛒'
+        };
+
+        function getIngredientEmoji(ingredient) {
+            const lower = ingredient.toLowerCase();
+            // Sort keys by length (longest first) for more specific matching
+            const sortedKeys = Object.keys(ingredientEmojis).sort((a, b) => b.length - a.length);
+            for (const key of sortedKeys) {
+                if (key !== 'default' && lower.includes(key)) {
+                    return ingredientEmojis[key];
+                }
+            }
+            return ingredientEmojis.default;
+        }
+
+        // Pantry staples detection
+        const pantryStaples = ['salt', 'pepper', 'black pepper', 'oil', 'olive oil', 'vegetable oil', 
+            'sugar', 'flour', 'water', 'garlic powder', 'onion powder', 'paprika', 'oregano', 
+            'basil', 'thyme', 'bay leaf', 'cumin', 'cinnamon', 'vanilla', 'baking powder', 
+            'baking soda', 'vinegar', 'soy sauce'];
+
+        function isPantryItem(ingredient) {
+            const lower = ingredient.toLowerCase();
+            return pantryStaples.some(staple => lower.includes(staple));
+        }
+
+        // Simulated product database (in production, this would be an API call)
+        const productDatabase = {
+            // Pasta & Grains
+            'spaghetti': { name: 'Spaghetti 500g', brand: 'Barilla', price: 2.49 },
+            'pasta': { name: 'Penne 500g', brand: 'De Cecco', price: 2.29 },
+            'egg noodles': { name: 'Egg Noodles 500g', brand: 'Soubry', price: 2.79 },
+            'noodles': { name: 'Egg Noodles 500g', brand: 'Soubry', price: 2.79 },
+            'rice': { name: 'Basmati Rice 1kg', brand: 'Tilda', price: 3.49 },
+            'flour': { name: 'All-Purpose Flour 1kg', brand: 'Colruyt', price: 1.19 },
+            
+            // Meat
+            'beef chuck': { name: 'Beef Chuck Steak 800g', brand: 'Belgian Beef', price: 12.99 },
+            'chuck steak': { name: 'Beef Chuck Steak 800g', brand: 'Belgian Beef', price: 12.99 },
+            'beef steak': { name: 'Beef Steak 500g', brand: 'Belgian Beef', price: 9.99 },
+            'steak': { name: 'Beef Steak 500g', brand: 'Belgian Beef', price: 9.99 },
+            'beef mince': { name: 'Beef Mince 500g', brand: 'Belgian Beef', price: 7.49 },
+            'ground beef': { name: 'Beef Mince 500g', brand: 'Belgian Beef', price: 7.49 },
+            'minced beef': { name: 'Beef Mince 500g', brand: 'Belgian Beef', price: 7.49 },
+            'pancetta': { name: 'Pancetta Cubes 200g', brand: 'Herta', price: 4.29 },
+            'bacon': { name: 'Bacon Strips 200g', brand: 'Aoste', price: 3.99 },
+            'chicken breast': { name: 'Chicken Breast 500g', brand: 'Volys', price: 6.99 },
+            'chicken': { name: 'Chicken Breast 500g', brand: 'Volys', price: 6.99 },
+            'pork': { name: 'Pork Chops 500g', brand: 'Belgian Pork', price: 5.99 },
+            'lamb': { name: 'Lamb Chops 500g', brand: 'Local', price: 11.99 },
+            'sausage': { name: 'Pork Sausages 400g', brand: 'Herta', price: 4.49 },
+            
+            // Dairy
+            'egg': { name: 'Free Range Eggs 6pk', brand: 'Colruyt Bio', price: 2.99 },
+            'eggs': { name: 'Free Range Eggs 6pk', brand: 'Colruyt Bio', price: 2.99 },
+            'sour cream': { name: 'Sour Cream 200ml', brand: 'Boni', price: 1.89 },
+            'cream': { name: 'Heavy Cream 250ml', brand: 'Boni', price: 1.79 },
+            'heavy cream': { name: 'Heavy Cream 250ml', brand: 'Boni', price: 1.79 },
+            'milk': { name: 'Whole Milk 1L', brand: 'Inza', price: 1.29 },
+            'butter': { name: 'Unsalted Butter 250g', brand: 'Président', price: 2.89 },
+            'parmesan': { name: 'Parmigiano Reggiano 100g', brand: 'Galbani', price: 5.49 },
+            'cheese': { name: 'Grated Cheese 200g', brand: 'Président', price: 3.29 },
+            'mozzarella': { name: 'Mozzarella 125g', brand: 'Galbani', price: 2.49 },
+            'feta': { name: 'Feta Cheese 200g', brand: 'Salakis', price: 3.29 },
+            'yogurt': { name: 'Greek Yogurt 500g', brand: 'Fage', price: 2.99 },
+            
+            // Vegetables
+            'onion': { name: 'Yellow Onions 1kg', brand: 'Local', price: 1.49 },
+            'garlic': { name: 'Garlic Bulbs 3pk', brand: 'Local', price: 1.29 },
+            'mushroom': { name: 'Button Mushrooms 250g', brand: 'Local', price: 2.29 },
+            'tomato': { name: 'Chopped Tomatoes 400g', brand: 'Mutti', price: 1.89 },
+            'potato': { name: 'Potatoes 2kg', brand: 'Local', price: 2.99 },
+            'carrot': { name: 'Carrots 1kg', brand: 'Local', price: 1.79 },
+            'spinach': { name: 'Fresh Spinach 200g', brand: 'Florette', price: 2.49 },
+            'broccoli': { name: 'Broccoli 500g', brand: 'Local', price: 2.29 },
+            'bell pepper': { name: 'Bell Peppers 3pk', brand: 'Local', price: 2.99 },
+            'zucchini': { name: 'Zucchini 500g', brand: 'Local', price: 1.99 },
+            'celery': { name: 'Celery Stalk', brand: 'Local', price: 1.49 },
+            'lettuce': { name: 'Iceberg Lettuce', brand: 'Local', price: 1.29 },
+            
+            // Liquids & Sauces
+            'olive oil': { name: 'Extra Virgin Olive Oil 500ml', brand: 'Bertolli', price: 5.99 },
+            'vegetable oil': { name: 'Vegetable Oil 1L', brand: 'Boni', price: 2.49 },
+            'beef broth': { name: 'Beef Broth 1L', brand: 'Knorr', price: 2.49 },
+            'beef stock': { name: 'Beef Stock 1L', brand: 'Knorr', price: 2.49 },
+            'chicken broth': { name: 'Chicken Broth 1L', brand: 'Knorr', price: 2.49 },
+            'chicken stock': { name: 'Chicken Stock 1L', brand: 'Knorr', price: 2.49 },
+            'vegetable broth': { name: 'Vegetable Broth 1L', brand: 'Knorr', price: 2.29 },
+            'worcestershire': { name: 'Worcestershire Sauce 150ml', brand: 'Lea & Perrins', price: 3.49 },
+            'soy sauce': { name: 'Soy Sauce 250ml', brand: 'Kikkoman', price: 3.29 },
+            'tomato paste': { name: 'Tomato Paste 200g', brand: 'Mutti', price: 1.69 },
+            'wine': { name: 'Cooking Wine 750ml', brand: 'Various', price: 4.99 },
+            'vinegar': { name: 'Red Wine Vinegar 500ml', brand: 'Boni', price: 1.99 },
+            
+            // Condiments
+            'dijon mustard': { name: 'Dijon Mustard 200g', brand: 'Maille', price: 2.79 },
+            'mustard': { name: 'Dijon Mustard 200g', brand: 'Maille', price: 2.79 },
+            'mayonnaise': { name: 'Mayonnaise 500ml', brand: 'Devos & Lemmens', price: 3.29 },
+            'ketchup': { name: 'Tomato Ketchup 500ml', brand: 'Heinz', price: 2.99 },
+            'honey': { name: 'Honey 350g', brand: 'Meli', price: 4.49 },
+            
+            // Herbs & Spices
+            'parsley': { name: 'Fresh Parsley Bunch', brand: 'Local', price: 1.29 },
+            'basil': { name: 'Fresh Basil Bunch', brand: 'Local', price: 1.49 },
+            'cilantro': { name: 'Fresh Cilantro Bunch', brand: 'Local', price: 1.29 },
+            'thyme': { name: 'Fresh Thyme Bunch', brand: 'Local', price: 1.49 },
+            'rosemary': { name: 'Fresh Rosemary Bunch', brand: 'Local', price: 1.49 },
+            'bay leaf': { name: 'Bay Leaves 10g', brand: 'Ducros', price: 1.99 },
+            'oregano': { name: 'Dried Oregano 20g', brand: 'Ducros', price: 1.79 },
+            'paprika': { name: 'Paprika 50g', brand: 'Ducros', price: 2.29 },
+            'cumin': { name: 'Ground Cumin 40g', brand: 'Ducros', price: 2.29 },
+            'cinnamon': { name: 'Ground Cinnamon 40g', brand: 'Ducros', price: 2.49 },
+            'ginger': { name: 'Fresh Ginger 100g', brand: 'Local', price: 1.29 },
+            
+            // Pantry staples (usually have)
+            'salt': { name: 'Sea Salt 500g', brand: 'La Baleine', price: 1.49 },
+            'pepper': { name: 'Black Pepper 50g', brand: 'Ducros', price: 2.99 },
+            'black pepper': { name: 'Black Pepper 50g', brand: 'Ducros', price: 2.99 },
+            'sugar': { name: 'White Sugar 1kg', brand: 'Tirlemont', price: 1.39 },
+            
+            // Fruits
+            'lemon': { name: 'Lemons 4pk', brand: 'Local', price: 1.99 },
+            'lime': { name: 'Limes 4pk', brand: 'Local', price: 2.29 },
+            'apple': { name: 'Apples 1kg', brand: 'Local', price: 2.49 },
+            'banana': { name: 'Bananas 1kg', brand: 'Chiquita', price: 1.79 },
+            'avocado': { name: 'Avocados 2pk', brand: 'Local', price: 2.99 },
+        };
+
+        // More specific matching - check longer phrases first
+        function matchToProduct(ingredient) {
+            const lower = ingredient.toLowerCase();
+            
+            // Sort keys by length (longest first) for more specific matching
+            const sortedKeys = Object.keys(productDatabase).sort((a, b) => b.length - a.length);
+            
+            for (const key of sortedKeys) {
+                if (lower.includes(key)) {
+                    return { ...productDatabase[key], originalIngredient: ingredient };
+                }
+            }
+            
+            // Default product with parsed ingredient name
+            const cleanName = ingredient
+                .replace(/^\d+[\s\/]*(?:g|kg|ml|l|lb|oz|tbsp|tsp|cup|cups|teaspoon|tablespoon|cloves?|pieces?|bunch|head|stalk|stalks)?\s*/i, '')
+                .replace(/,.*$/, '') // Remove everything after comma
+                .trim();
+            
+            return { 
+                name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1), 
+                brand: 'Various', 
+                price: 2.99,
+                originalIngredient: ingredient 
+            };
+        }
+
+        // Spoonacular API configuration (for recipe parsing)
+        const SPOONACULAR_API_KEY = 'f32e018a060442fdb36ccfa4f5a6f5b3';
+        const SPOONACULAR_BASE_URL = 'https://api.spoonacular.com';
+
+        // Kroger API - uses our Netlify function to avoid CORS
+        const KROGER_API_PROXY = '/.netlify/functions/kroger';
+
+        // Search Kroger for a product (via proxy)
+        async function searchKrogerProduct(ingredient, locationId = null) {
+            // Clean up ingredient for search
+            const searchTerm = ingredient
+                .replace(/^\d+[\s\/]*(?:g|kg|ml|l|lb|oz|tbsp|tsp|cup|cups|teaspoon|tablespoon|cloves?|pieces?|bunch|head|stalk|stalks)?\s*/i, '')
+                .replace(/,.*$/, '')
+                .replace(/\(.*?\)/g, '')
+                .replace(/fresh|dried|chopped|minced|diced|sliced|to taste|for garnish|optional/gi, '')
+                .trim()
+                .split(' ')
+                .slice(0, 3)
+                .join(' ');
+
+            let url = `${KROGER_API_PROXY}?action=search&term=${encodeURIComponent(searchTerm)}`;
+            if (locationId) {
+                url += `&locationId=${locationId}`;
+            }
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    console.log(`Kroger search failed for: ${searchTerm}`);
+                    return null;
+                }
+
+                const data = await response.json();
+                
+                if (data.data && data.data.length > 0) {
+                    const product = data.data[0];
+                    const price = product.items?.[0]?.price?.regular || 
+                                  product.items?.[0]?.price?.promo || 
+                                  null;
+                    
+                    return {
+                        name: product.description || searchTerm,
+                        brand: product.brand || 'Kroger',
+                        price: price || 2.99,
+                        image: product.images?.[0]?.sizes?.find(s => s.size === 'thumbnail')?.url || null,
+                        upc: product.upc,
+                        krogerProductId: product.productId,
+                        originalIngredient: ingredient
+                    };
+                }
+                return null;
+            } catch (error) {
+                console.error('Kroger product search error:', error);
+                return null;
+            }
+        }
+
+        // Search for nearby Kroger stores (via proxy)
+        async function searchKrogerStores(zipCode) {
+            try {
+                const response = await fetch(`${KROGER_API_PROXY}?action=locations&zipCode=${zipCode}`);
+
+                if (!response.ok) return [];
+
+                const data = await response.json();
+                return data.data?.map(store => ({
+                    id: store.locationId,
+                    name: store.name,
+                    address: `${store.address?.addressLine1}, ${store.address?.city}`,
+                    chain: store.chain
+                })) || [];
+            } catch (error) {
+                console.error('Kroger store search error:', error);
+                return [];
+            }
+        }
+
+        // Test if Kroger API proxy is available
+        async function testKrogerApi() {
+            try {
+                const response = await fetch(`${KROGER_API_PROXY}?action=test`);
+                const data = await response.json();
+                return data.success === true;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // Match ingredients to Kroger products
+        async function matchIngredientsToKroger(ingredients, locationId = null) {
+            const results = [];
+            const seenProducts = new Set();
+            let krogerSuccessCount = 0;
+            let fallbackCount = 0;
+
+            // Test if Kroger API proxy is available
+            const krogerAvailable = await testKrogerApi();
+            
+            console.log('Kroger API available:', krogerAvailable);
+
+            for (const ingredient of ingredients) {
+                // Skip pantry staples
+                if (isPantryItem(ingredient)) {
+                    results.push({
+                        name: ingredient,
+                        brand: 'Pantry staple',
+                        price: 0,
+                        emoji: getIngredientEmoji(ingredient),
+                        originalIngredient: ingredient,
+                        isPantry: true
+                    });
+                    continue;
+                }
+
+                // Search Kroger if available
+                let krogerProduct = null;
+                if (krogerAvailable) {
+                    krogerProduct = await searchKrogerProduct(ingredient, locationId);
+                }
+                
+                if (krogerProduct && !seenProducts.has(krogerProduct.name)) {
+                    seenProducts.add(krogerProduct.name);
+                    results.push({
+                        ...krogerProduct,
+                        emoji: getIngredientEmoji(ingredient),
+                        isPantry: false,
+                        source: 'kroger'
+                    });
+                    krogerSuccessCount++;
+                } else if (!seenProducts.has(ingredient)) {
+                    // Fallback to simulated product
+                    const fallback = matchToProduct(ingredient);
+                    if (!seenProducts.has(fallback.name)) {
+                        seenProducts.add(fallback.name);
+                        results.push({
+                            ...fallback,
+                            emoji: getIngredientEmoji(ingredient),
+                            isPantry: false,
+                            source: 'fallback'
+                        });
+                        fallbackCount++;
+                    }
+                }
+            }
+
+            console.log(`Kroger products: ${krogerSuccessCount}, Fallback: ${fallbackCount}`);
+            
+            // Store stats for display
+            state.krogerStats = { success: krogerSuccessCount, fallback: fallbackCount, available: krogerAvailable };
+
+            return results;
+        }
+
+        // Extract recipe from URL using Spoonacular
+        async function extractRecipeFromUrl(url) {
+            const endpoint = `${SPOONACULAR_BASE_URL}/recipes/extract?url=${encodeURIComponent(url)}&apiKey=${SPOONACULAR_API_KEY}&analyze=true&forceExtraction=true`;
+            
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Spoonacular error:', errorText);
+                    throw new Error('Failed to extract recipe from URL');
+                }
+                
+                const data = await response.json();
+                
+                if (!data || !data.extendedIngredients || data.extendedIngredients.length === 0) {
+                    throw new Error('No ingredients found in recipe');
+                }
+                
+                // Transform Spoonacular response to our format
+                return {
+                    name: data.title || 'Recipe',
+                    ingredients: data.extendedIngredients.map(ing => ing.original || ing.originalString || `${ing.amount} ${ing.unit} ${ing.name}`),
+                    cookTime: data.readyInMinutes || null,
+                    servings: data.servings || 4,
+                    nutrition: data.nutrition ? {
+                        calories: data.nutrition.nutrients?.find(n => n.name === 'Calories')?.amount || null,
+                        carbs: data.nutrition.nutrients?.find(n => n.name === 'Carbohydrates')?.amount || null,
+                        protein: data.nutrition.nutrients?.find(n => n.name === 'Protein')?.amount || null,
+                        fat: data.nutrition.nutrients?.find(n => n.name === 'Fat')?.amount || null
+                    } : {},
+                    tags: [
+                        ...(data.cuisines || []),
+                        ...(data.dishTypes || []),
+                        ...(data.diets || [])
+                    ].slice(0, 5),
+                    utensils: data.equipment?.map(e => e.name) || [],
+                    image: data.image || null,
+                    sourceUrl: data.sourceUrl || url
+                };
+            } catch (error) {
+                console.error('Extract recipe error:', error);
+                throw error;
+            }
+        }
+
+        // Analyze ingredients text using Spoonacular
+        async function analyzeIngredientsText(text) {
+            // Parse ingredients line by line
+            const lines = text.split(/[\n\r]+/).map(l => l.trim()).filter(l => l.length > 2);
+            
+            const endpoint = `${SPOONACULAR_BASE_URL}/recipes/parseIngredients?apiKey=${SPOONACULAR_API_KEY}`;
+            
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `ingredientList=${encodeURIComponent(lines.join('\n'))}&servings=4&includeNutrition=true`
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Spoonacular parse error:', errorText);
+                    throw new Error('Failed to parse ingredients');
+                }
+                
+                const data = await response.json();
+                
+                if (!data || data.length === 0) {
+                    throw new Error('No ingredients could be parsed');
+                }
+                
+                // Calculate total nutrition
+                let totalCalories = 0, totalCarbs = 0, totalProtein = 0, totalFat = 0;
+                
+                data.forEach(ing => {
+                    if (ing.nutrition && ing.nutrition.nutrients) {
+                        const nutrients = ing.nutrition.nutrients;
+                        totalCalories += nutrients.find(n => n.name === 'Calories')?.amount || 0;
+                        totalCarbs += nutrients.find(n => n.name === 'Carbohydrates')?.amount || 0;
+                        totalProtein += nutrients.find(n => n.name === 'Protein')?.amount || 0;
+                        totalFat += nutrients.find(n => n.name === 'Fat')?.amount || 0;
+                    }
+                });
+                
+                // Infer recipe metadata from ingredients
+                const metadata = inferRecipeMetadata(data.map(ing => ing.original || ing.originalString));
+                
+                return {
+                    name: metadata.name,
+                    ingredients: data.map(ing => ing.original || ing.originalString),
+                    cookTime: metadata.cookTime,
+                    servings: 4,
+                    nutrition: {
+                        calories: Math.round(totalCalories) || null,
+                        carbs: Math.round(totalCarbs) || null,
+                        protein: Math.round(totalProtein) || null,
+                        fat: Math.round(totalFat) || null
+                    },
+                    tags: metadata.tags,
+                    utensils: metadata.utensils
+                };
+            } catch (error) {
+                console.error('Analyze ingredients error:', error);
+                throw error;
+            }
+        }
+
+        // URL detection
+        function isUrl(text) {
+            const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+            return urlPattern.test(text.trim());
+        }
+
+        // Local ingredient parsing (fallback)
+        function parseIngredientsLocally(text) {
+            // Split by newlines and common separators
+            const lines = text.split(/[\n\r]+/).map(l => l.trim()).filter(l => l.length > 0);
+            
+            const ingredients = [];
+            const ingredientPatterns = [
+                /^[-•*]\s*(.+)$/,           // Bullet points
+                /^\d+[\.\)]\s*(.+)$/,       // Numbered lists
+                /^(\d+\s*(?:g|kg|ml|l|oz|lb|cup|cups|tbsp|tsp|teaspoon|tablespoon|bunch|clove|cloves|piece|pieces|slice|slices|can|cans|package|head|stalk|stalks)?\s*.+)$/i,  // Quantity patterns
+            ];
+
+            lines.forEach(line => {
+                // Skip obvious non-ingredients
+                if (line.toLowerCase().includes('instruction') || 
+                    line.toLowerCase().includes('method') ||
+                    line.toLowerCase().includes('step ') ||
+                    line.toLowerCase().includes('direction') ||
+                    line.toLowerCase().includes('preheat') ||
+                    line.toLowerCase().includes('minutes') && line.toLowerCase().includes('cook') ||
+                    line.length > 100) {
+                    return;
+                }
+
+                // Try to match ingredient patterns
+                for (const pattern of ingredientPatterns) {
+                    const match = line.match(pattern);
+                    if (match) {
+                        ingredients.push(match[1] || match[0]);
+                        return;
+                    }
+                }
+
+                // If line contains common ingredient keywords, include it
+                const ingredientKeywords = ['cup', 'tbsp', 'tsp', 'gram', 'kg', 'ml', 'oz', 'pound', 'chopped', 'diced', 'minced', 'sliced', 'fresh', 'dried'];
+                if (ingredientKeywords.some(kw => line.toLowerCase().includes(kw)) || 
+                    line.match(/^\d/) ||  // Starts with a number
+                    line.length < 50) {   // Short lines are likely ingredients
+                    ingredients.push(line.replace(/^[-•*]\s*/, ''));
+                }
+            });
+
+            // If we couldn't find structured ingredients, just split by lines
+            if (ingredients.length === 0) {
+                return lines.filter(l => l.length > 2 && l.length < 80);
+            }
+
+            return ingredients;
+        }
+
+        // Infer recipe metadata from ingredients
+        function inferRecipeMetadata(ingredients) {
+            const allText = ingredients.join(' ').toLowerCase();
+            const tags = [];
+            const utensils = ['Knife', 'Cutting Board'];
+
+            // Cuisine detection
+            if (allText.includes('soy sauce') || allText.includes('ginger') || allText.includes('sesame')) {
+                tags.push('Asian');
+            }
+            if (allText.includes('pasta') || allText.includes('parmesan') || allText.includes('basil') || allText.includes('mozzarella')) {
+                tags.push('Italian');
+                utensils.push('Large Pot');
+            }
+            if (allText.includes('tortilla') || allText.includes('cumin') || allText.includes('jalapeño') || allText.includes('cilantro')) {
+                tags.push('Mexican');
+            }
+            if (allText.includes('curry') || allText.includes('turmeric') || allText.includes('garam masala')) {
+                tags.push('Indian');
+            }
+            if (allText.includes('feta') || allText.includes('olive') || allText.includes('oregano')) {
+                tags.push('Mediterranean');
+            }
+
+            // Meal type detection
+            if (allText.includes('egg') && (allText.includes('bacon') || allText.includes('toast'))) {
+                tags.push('Breakfast');
+            } else {
+                tags.push('Dinner');
+            }
+
+            // Dietary detection
+            const meatKeywords = ['chicken', 'beef', 'pork', 'lamb', 'bacon', 'sausage', 'ham', 'turkey', 'fish', 'salmon', 'shrimp', 'prawn'];
+            const hasMeat = meatKeywords.some(m => allText.includes(m));
+            if (!hasMeat) {
+                if (!allText.includes('egg') && !allText.includes('milk') && !allText.includes('cheese') && !allText.includes('cream') && !allText.includes('butter')) {
+                    tags.push('Vegan');
+                } else {
+                    tags.push('Vegetarian');
+                }
+            }
+
+            // Utensils based on ingredients
+            if (allText.includes('bake') || allText.includes('oven')) {
+                utensils.push('Baking Dish');
+            }
+            if (hasMeat || allText.includes('stir') || allText.includes('sauté')) {
+                utensils.push('Frying Pan');
+            }
+            if (allText.includes('blend') || allText.includes('smooth')) {
+                utensils.push('Blender');
+            }
+            if (allText.includes('whisk') || allText.includes('beat')) {
+                utensils.push('Whisk');
+            }
+            if (allText.includes('soup') || allText.includes('boil') || allText.includes('simmer')) {
+                utensils.push('Pot');
+            }
+
+            // Estimate cook time based on complexity
+            let estimatedTime = 20 + (ingredients.length * 2);
+            if (hasMeat) estimatedTime += 15;
+            if (allText.includes('slow') || allText.includes('braise')) estimatedTime = 120;
+            if (allText.includes('bake')) estimatedTime += 20;
+
+            // Estimate nutrition (very rough)
+            const nutrition = {
+                calories: Math.round(300 + (ingredients.length * 30) + (hasMeat ? 150 : 0)),
+                carbs: Math.round(30 + (allText.includes('pasta') || allText.includes('rice') || allText.includes('bread') ? 40 : 0)),
+                protein: Math.round(15 + (hasMeat ? 25 : 0) + (allText.includes('egg') ? 10 : 0) + (allText.includes('cheese') ? 8 : 0)),
+                fat: Math.round(15 + (allText.includes('oil') || allText.includes('butter') ? 10 : 0) + (hasMeat ? 12 : 0))
+            };
+
+            // Try to extract a name from the first line or infer from ingredients
+            let name = 'Your Recipe';
+            const mainIngredients = [];
+            if (allText.includes('chicken')) mainIngredients.push('Chicken');
+            if (allText.includes('pasta') || allText.includes('spaghetti')) mainIngredients.push('Pasta');
+            if (allText.includes('beef')) mainIngredients.push('Beef');
+            if (allText.includes('salmon')) mainIngredients.push('Salmon');
+            if (allText.includes('rice')) mainIngredients.push('Rice');
+            if (allText.includes('salad')) mainIngredients.push('Salad');
+            
+            if (mainIngredients.length > 0) {
+                name = mainIngredients.join(' & ') + ' Dish';
+            }
+
+            return {
+                name,
+                ingredients,
+                cookTime: Math.min(estimatedTime, 90),
+                servings: 4,
+                nutrition,
+                tags: tags.slice(0, 4),
+                utensils: [...new Set(utensils)].slice(0, 4)
+            };
+        }
+
+        // Main analyze function
+        async function analyzeRecipe() {
+            const input = recipeTextarea.value.trim();
+            
+            if (!input) {
+                alert('Please paste your recipe URL or ingredients');
+                return;
+            }
+
+            // Show loading state
+            analyzeBtn.classList.add('loading');
+            analyzeBtn.innerHTML = '<div class="spinner"></div> Analyzing...';
+            analysisResults.style.display = 'none';
+            document.getElementById('analysisError').style.display = 'none';
+            document.getElementById('analysisContent').style.display = 'none';
+
+            let recipeData = null;
+
+            try {
+                if (isUrl(input)) {
+                    // Use Spoonacular to extract recipe from URL
+                    analyzeBtn.innerHTML = '<div class="spinner"></div> Fetching recipe...';
+                    recipeData = await extractRecipeFromUrl(input);
+                } else {
+                    // Use Spoonacular to parse ingredient text
+                    analyzeBtn.innerHTML = '<div class="spinner"></div> Parsing ingredients...';
+                    
+                    try {
+                        recipeData = await analyzeIngredientsText(input);
+                    } catch (apiError) {
+                        console.log('Spoonacular API failed, using local parsing...', apiError);
+                        // Fallback to local parsing
+                        const ingredients = parseIngredientsLocally(input);
+                        recipeData = inferRecipeMetadata(ingredients);
+                    }
+                }
+
+                if (!recipeData || !recipeData.ingredients || recipeData.ingredients.length === 0) {
+                    throw new Error('Could not find any ingredients. Please check your input.');
+                }
+
+                // Process and display results - use Kroger API for real products
+                analyzeBtn.innerHTML = '<div class="spinner"></div> Finding products at Kroger...';
+                await displayRecipeResultsWithKroger(recipeData);
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                document.getElementById('analysisError').style.display = 'block';
+                document.getElementById('errorMessage').textContent = error.message || 'Could not parse recipe. Please try pasting ingredients directly.';
+                analysisResults.style.display = 'block';
+            } finally {
+                analyzeBtn.classList.remove('loading');
+                analyzeBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    Analyze & Get Prices
+                `;
+            }
+        }
+
+        // Format cook time nicely
+        function formatCookTime(minutes) {
+            if (!minutes) return '-- min';
+            if (minutes < 60) return `${minutes} min`;
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            if (mins === 0) return `${hours} hr${hours > 1 ? 's' : ''}`;
+            return `${hours} hr${hours > 1 ? 's' : ''} ${mins} min`;
+        }
+
+        // Display recipe results with Kroger products
+        async function displayRecipeResultsWithKroger(recipe) {
+            // Store recipe in state for later use
+            state.currentRecipe = recipe;
+
+            // Recipe name
+            document.getElementById('resultRecipeName').textContent = recipe.name || 'Your Recipe';
+
+            // Cook time - format nicely
+            const cookTime = recipe.totalTime || recipe.cookTime;
+            document.getElementById('cookTimeValue').textContent = formatCookTime(cookTime);
+
+            // Servings - use user's selected value, not recipe's
+            const userServings = parseInt(document.getElementById('servingsInput').value) || 4;
+            document.getElementById('servingsValue').textContent = `${userServings} servings`;
+
+            // Nutrition
+            if (recipe.nutrition) {
+                document.getElementById('nutritionCalories').textContent = recipe.nutrition.calories || '--';
+                document.getElementById('nutritionCarbs').textContent = recipe.nutrition.carbs ? `${recipe.nutrition.carbs}g` : '--';
+                document.getElementById('nutritionProtein').textContent = recipe.nutrition.protein ? `${recipe.nutrition.protein}g` : '--';
+                document.getElementById('nutritionFat').textContent = recipe.nutrition.fat ? `${recipe.nutrition.fat}g` : '--';
+            }
+
+            // Tags
+            const tagsContainer = document.getElementById('resultTags');
+            const tagEmojis = {
+                'italian': '🇮🇹', 'mexican': '🇲🇽', 'indian': '🇮🇳', 'chinese': '🇨🇳', 'japanese': '🇯🇵',
+                'thai': '🇹🇭', 'french': '🇫🇷', 'greek': '🇬🇷', 'american': '🇺🇸', 'spanish': '🇪🇸',
+                'dinner': '🍽️', 'lunch': '🥗', 'breakfast': '🍳', 'dessert': '🍰', 'snack': '🍿',
+                'vegan': '🌱', 'vegetarian': '🥬', 'gluten-free': '🌾', 'healthy': '💚',
+                'quick': '⚡', 'easy': '👌', 'budget': '💰'
+            };
+            
+            let tagsHtml = '';
+            const tags = recipe.tags || [];
+            
+            // Add quick tag if cook time is under 30 min
+            if (cookTime && cookTime <= 30 && !tags.some(t => t.toLowerCase().includes('quick'))) {
+                tags.push('Quick');
+            }
+            
+            tags.slice(0, 4).forEach(tag => {
+                const tagLower = tag.toLowerCase();
+                let emoji = '🏷️';
+                for (const [key, e] of Object.entries(tagEmojis)) {
+                    if (tagLower.includes(key)) { emoji = e; break; }
+                }
+                const isGreen = ['quick', 'easy', 'healthy', 'vegan', 'vegetarian'].some(k => tagLower.includes(k));
+                tagsHtml += `<span class="tag${isGreen ? ' green' : ''}">${emoji} ${tag}</span>`;
+            });
+            tagsContainer.innerHTML = tagsHtml;
+
+            // Utensils
+            const utensilsContainer = document.getElementById('resultUtensils');
+            const utensils = recipe.utensils || ['Pan', 'Pot', 'Knife'];
+            const utensilEmojis = {
+                'pan': '🍳', 'frying pan': '🍳', 'skillet': '🍳',
+                'pot': '🥘', 'saucepan': '🥘',
+                'bowl': '🥣', 'mixing bowl': '🥣',
+                'knife': '🔪', 'cutting board': '🔪',
+                'oven': '🫕', 'baking': '🫕',
+                'blender': '🧊', 'mixer': '🧊',
+                'whisk': '🥄', 'spatula': '🥄', 'spoon': '🥄',
+                'tongs': '🍴', 'fork': '🍴',
+                'grill': '🔥', 'bbq': '🔥',
+                'default': '🍴'
+            };
+            
+            let utensilsHtml = '';
+            utensils.slice(0, 4).forEach(utensil => {
+                const lower = utensil.toLowerCase();
+                let emoji = utensilEmojis.default;
+                for (const [key, e] of Object.entries(utensilEmojis)) {
+                    if (lower.includes(key)) { emoji = e; break; }
+                }
+                utensilsHtml += `<span class="utensil">${emoji} ${utensil}</span>`;
+            });
+            utensilsContainer.innerHTML = utensilsHtml;
+
+            // Process ingredients into products using Kroger API
+            const krogerProducts = await matchIngredientsToKroger(recipe.ingredients);
+            
+            const mainItems = [];
+            const pantryItems = [];
+            let totalPrice = 0;
+
+            krogerProducts.forEach(product => {
+                if (product.isPantry) {
+                    pantryItems.push(product);
+                } else {
+                    mainItems.push(product);
+                    totalPrice += product.price || 0;
+                }
+            });
+
+            // Update total price (USD for Kroger)
+            document.getElementById('resultTotalPrice').textContent = `$${totalPrice.toFixed(2)}`;
+            state.targetBudget = totalPrice;
+            document.getElementById('targetValue').textContent = `$${totalPrice.toFixed(2)}`;
+
+            // Render main items
+            const mainItemsList = document.getElementById('mainItemsList');
+            mainItemsList.innerHTML = mainItems.map(product => `
+                <div class="product-card" data-price="${product.price || 0}">
+                    <div class="product-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="product-image">${product.image ? `<img src="${product.image}" alt="${product.name}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">` : product.emoji}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-brand">${product.brand || 'Kroger'}</div>
+                    </div>
+                    <div class="product-price">$${(product.price || 0).toFixed(2)}</div>
+                </div>
+            `).join('');
+            document.getElementById('mainItemsCount').textContent = mainItems.length;
+
+            // Render pantry items
+            const pantryItemsList = document.getElementById('pantryItemsList');
+            pantryItemsList.innerHTML = pantryItems.map(product => `
+                <div class="product-card pantry-card">
+                    <div class="product-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="product-image">${product.emoji}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-brand">Pantry staple</div>
+                    </div>
+                    <div class="product-price">--</div>
+                </div>
+            `).join('');
+            document.getElementById('pantryItemsCount').textContent = pantryItems.length;
+
+            // Show Kroger API status
+            const statusHtml = state.krogerStats?.available 
+                ? `<div style="text-align: center; padding: 12px; margin-top: 16px; background: var(--success-light); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--success);">
+                    ✅ ${state.krogerStats.success} products from Kroger API${state.krogerStats.fallback > 0 ? ` • ${state.krogerStats.fallback} estimated` : ''}
+                   </div>`
+                : `<div style="text-align: center; padding: 12px; margin-top: 16px; background: var(--peach-100); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--peach-600);">
+                    ⚠️ Kroger API unavailable - showing estimated prices
+                   </div>`;
+            
+            // Insert status after pantry items
+            document.getElementById('pantryItemsList').insertAdjacentHTML('afterend', statusHtml);
+
+            // Show results
+            document.getElementById('analysisContent').style.display = 'block';
+            analysisResults.style.display = 'block';
+            analysisResults.scrollIntoView({ behavior: 'smooth' });
+
+            // Add click handlers to new product cards
+            document.querySelectorAll('#mainItemsList .product-card, #pantryItemsList .product-card').forEach(card => {
+                card.addEventListener('click', () => card.classList.toggle('checked'));
+            });
+
+            // Store for shop mode
+            state.shopItems = mainItems;
+        }
+
+        // Analyze button click
+        analyzeBtn.addEventListener('click', analyzeRecipe);
+
+        // Save list button
+        saveListBtn.addEventListener('click', () => {
+            if (!state.currentRecipe || !state.shopItems || state.shopItems.length === 0) {
+                alert('No recipe to save. Please analyze a recipe first.');
+                return;
+            }
+            
+            saveListBtn.innerHTML = '<div class="spinner"></div> Saving...';
+            
+            setTimeout(() => {
+                // Create a new saved list object
+                const newList = {
+                    id: Date.now(),
+                    name: state.currentRecipe.name || 'Recipe',
+                    price: state.targetBudget,
+                    store: state.selectedStore,
+                    location: state.selectedLocation || 'Belgium',
+                    tags: state.currentRecipe.tags || [],
+                    items: [...state.shopItems],
+                    savedAt: new Date()
+                };
+                
+                // Add to beginning of saved lists
+                state.savedLists.unshift(newList);
+                
+                // Update the UI
+                renderSavedLists();
+                
+                // Switch to plan screen
+                switchScreen('plan');
+                
+                // Reset button
+                saveListBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save to My Lists
+                `;
+            }, 800);
+        });
+
+        // Format relative time
+        function formatRelativeTime(date) {
+            const now = new Date();
+            const diffMs = now - new Date(date);
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} min ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
+        }
+
+        // Get tag emoji
+        function getTagEmoji(tag) {
+            const tagLower = tag.toLowerCase();
+            const tagEmojis = {
+                'italian': '🇮🇹', 'thai': '🇹🇭', 'indian': '🇮🇳', 'mexican': '🇲🇽', 'chinese': '🇨🇳', 'japanese': '🇯🇵', 'french': '🇫🇷', 'greek': '🇬🇷', 'spanish': '🇪🇸', 'korean': '🇰🇷', 'vietnamese': '🇻🇳', 'mediterranean': '🫒', 'asian': '🥢', 'american': '🇺🇸',
+                'breakfast': '🍳', 'lunch': '🥗', 'dinner': '🍽️', 'dessert': '🍰', 'snack': '🍿', 'brunch': '🥞',
+                'vegan': '🌱', 'vegetarian': '🥬', 'gluten-free': '🌾', 'dairy-free': '🥛', 'keto': '🥑', 'low-carb': '🥩', 'healthy': '💚', 'comfort': '🏠',
+                'quick': '⚡', 'easy': '👍', 'slow cooker': '🍲', 'instant pot': '⏱️', 'one pot': '🥘', 'grilled': '🔥', 'baked': '🥧', 'fried': '🍳',
+                'soup': '🍲', 'salad': '🥗', 'pasta': '🍝', 'rice': '🍚', 'sandwich': '🥪', 'burger': '🍔', 'pizza': '🍕', 'curry': '🍛', 'stew': '🥘', 'roast': '🍖',
+                'beef': '🥩', 'chicken': '🍗', 'pork': '🥓', 'fish': '🐟', 'seafood': '🦐', 'lamb': '🍖'
+            };
+            
+            for (const [key, emoji] of Object.entries(tagEmojis)) {
+                if (tagLower.includes(key)) return emoji;
+            }
+            return '🏷️';
+        }
+
+        // Render saved lists
+        function renderSavedLists() {
+            const container = document.getElementById('savedListsContainer');
+            const heroCard = document.getElementById('heroCard');
+            const noListsState = document.getElementById('noListsState');
+            
+            // Show/hide empty state
+            if (state.savedLists.length === 0) {
+                noListsState.style.display = 'block';
+                heroCard.style.display = 'none';
+                container.innerHTML = '';
+                return;
+            }
+            
+            noListsState.style.display = 'none';
+            heroCard.style.display = 'block';
+            
+            // Update hero card with latest list
+            const latest = state.savedLists[0];
+            document.querySelector('.hero-badge').innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Latest • ${formatRelativeTime(latest.savedAt)}
+            `;
+            document.querySelector('.hero-title').textContent = latest.name;
+            document.querySelector('.hero-price').textContent = `€${latest.price.toFixed(2)}`;
+            document.querySelector('.hero-meta').innerHTML = `
+                <span class="hero-price">€${latest.price.toFixed(2)}</span>
+                <span>• ${storeEmojis[latest.store] || '🛒'} ${latest.store} ${latest.location}</span>
+            `;
+            
+            // Store latest list data for shopping
+            heroCard.dataset.listId = latest.id;
+            
+            // Render other lists (skip the first one as it's in hero)
+            const otherLists = state.savedLists.slice(1);
+            
+            if (otherLists.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-400); text-align: center; padding: 20px;">No previous lists yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = otherLists.map(list => `
+                <div class="list-card" data-list-id="${list.id}">
+                    <div class="list-card-header">
+                        <span class="list-card-title">${list.name}</span>
+                        <span class="list-card-price">€${list.price.toFixed(2)}</span>
+                    </div>
+                    <div class="list-card-meta">
+                        <span>${storeEmojis[list.store] || '🛒'} ${list.store} ${list.location}</span>
+                        <span>• ${formatRelativeTime(list.savedAt)}</span>
+                    </div>
+                    <div class="list-card-tags">
+                        ${list.tags.slice(0, 3).map(tag => `<span class="list-card-tag">${getTagEmoji(tag)} ${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add click handlers to list cards
+            container.querySelectorAll('.list-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const listId = parseInt(card.dataset.listId);
+                    loadListForShopping(listId);
+                });
+            });
+        }
+
+        // Load a saved list for shopping
+        function loadListForShopping(listId) {
+            const list = state.savedLists.find(l => l.id === listId);
+            if (!list) return;
+            
+            state.currentRecipe = { name: list.name, tags: list.tags };
+            state.shopItems = list.items;
+            state.targetBudget = list.price;
+            state.selectedStore = list.store;
+            state.selectedLocation = list.location;
+            
+            populateShopScreen();
+            switchScreen('shop');
+        }
+
+        // Populate shop screen with current recipe items
+        function populateShopScreen() {
+            const shopEmptyState = document.getElementById('shopEmptyState');
+            const shopListSection = document.getElementById('shopListSection');
+            const shopItemsList = document.getElementById('shopItemsList');
+            
+            if (!state.currentRecipe || !state.shopItems || state.shopItems.length === 0) {
+                shopEmptyState.style.display = 'block';
+                shopListSection.style.display = 'none';
+                return;
+            }
+
+            shopEmptyState.style.display = 'none';
+            shopListSection.style.display = 'block';
+
+            // Update header info
+            document.getElementById('shopRecipeName').textContent = state.currentRecipe.name || 'Recipe';
+            document.getElementById('shopItemsCount').textContent = `${state.shopItems.length} items`;
+            document.getElementById('shopStoreName').textContent = `${state.selectedStore} ${state.selectedLocation}`.trim();
+
+            // Render shop items
+            shopItemsList.innerHTML = state.shopItems.map(product => `
+                <div class="product-card shop-item" data-price="${product.price}">
+                    <div class="product-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="product-image">${product.emoji}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-brand">${product.brand}</div>
+                    </div>
+                    <div class="product-price">€${product.price.toFixed(2)}</div>
+                </div>
+            `).join('');
+
+            // Add click handlers to shop items
+            document.querySelectorAll('#shopItemsList .shop-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const price = parseFloat(item.dataset.price);
+                    const itemId = item.querySelector('.product-name').textContent;
+                    
+                    if (item.classList.contains('checked')) {
+                        state.checkedItems.delete(itemId);
+                        state.inCart -= price;
+                        item.classList.remove('checked');
+                    } else {
+                        state.checkedItems.add(itemId);
+                        state.inCart += price;
+                        item.classList.add('checked');
+                    }
+                    
+                    updateCart();
+                });
+            });
+
+            // Reset cart state
+            state.inCart = 0;
+            state.checkedItems.clear();
+            updateCart();
+        }
+
+        // Start shopping
+        startShoppingBtn.addEventListener('click', () => {
+            // Check if we have a saved list to load
+            if (state.savedLists.length > 0) {
+                const heroCard = document.getElementById('heroCard');
+                const listId = parseInt(heroCard.dataset.listId);
+                if (listId) {
+                    loadListForShopping(listId);
+                    return;
+                }
+            }
+            
+            // Fallback to current recipe
+            const selectedStoreBtn = document.querySelector('.store-option.selected');
+            if (selectedStoreBtn) {
+                state.selectedStore = selectedStoreBtn.textContent.trim();
+            }
+            state.selectedLocation = locationInput.value.split(',')[0] || '';
+            
+            populateShopScreen();
+            switchScreen('shop');
+        });
+
+        // Product card toggle (for analyze results)
+        productCards.forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('checked');
+            });
+        });
+
+        // Shop items event delegation is now handled in populateShopScreen()
+
+        function updateCart() {
+            inCartValue.textContent = `€${state.inCart.toFixed(2)}`;
+            const progress = Math.min((state.inCart / state.targetBudget) * 100, 100);
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Finish shopping
+        finishBtn.addEventListener('click', () => {
+            const spent = state.inCart;
+            const saved = state.targetBudget - spent;
+            document.getElementById('modalSpent').textContent = `€${spent.toFixed(2)}`;
+            document.getElementById('modalSaved').textContent = `€${saved.toFixed(2)}`;
+            completeModal.classList.add('active');
+        });
+
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            completeModal.classList.remove('active');
+            // Reset shop state
+            state.inCart = 0;
+            state.checkedItems.clear();
+            document.querySelectorAll('#shopItemsList .shop-item').forEach(item => item.classList.remove('checked'));
+            updateCart();
+            switchScreen('plan');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePhase(1);
+            renderSavedLists(); // Render any saved lists
+        });
+    </script>
+</body>
+</html>
