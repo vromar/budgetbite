@@ -1,8 +1,7 @@
 // Kroger API Proxy for Netlify Functions
 
-const KROGER_CLIENT_ID = 'budgetbite-omar-bbc91h50';
-const KROGER_CLIENT_SECRET = '9CSeMcFAMU4ERuG6MmkMwqLERvRcze1xtultZOmE';
-
+const KROGER_CLIENT_ID = 'budgetbite-test-123-bbc9c1kg';
+const KROGER_CLIENT_SECRET = '7pdzTKVPzt0Icfy-6C62hYF0HjvSeOLs7MHVSngd';
 // Get access token from Kroger
 async function getToken() {
     const credentials = Buffer.from(`${KROGER_CLIENT_ID}:${KROGER_CLIENT_SECRET}`).toString('base64');
