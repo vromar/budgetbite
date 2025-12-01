@@ -16,8 +16,9 @@ async function getToken() {
         body: 'grant_type=client_credentials&scope=product.compact'
     });
 
-    if (!response.ok) {
-        throw new Error('Failed to get Kroger token');
+   if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to get Kroger token: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
